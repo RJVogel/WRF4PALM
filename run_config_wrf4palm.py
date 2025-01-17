@@ -44,6 +44,7 @@ import warnings
 ## supress warnings
 ## switch to other actions if needed
 warnings.filterwarnings("ignore", '.*pyproj.*')
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 start = datetime.now()
 

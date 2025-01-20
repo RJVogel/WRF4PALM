@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import xarray as xr
 from tqdm import tqdm
 from functools import partial
 from multiprocess import Pool
@@ -20,9 +21,58 @@ def multi_zinterp(max_pool, ds_in, var, zcoord, ds_out):
     pool_dict = dict(pool_outputs)
     for lvl in zcoord:
         if var == "W":
-            ds_out[var].loc[dict(zw=lvl)] = pool_dict[lvl] 
+            # Create new DataArray with PALM dimensions
+            data = xr.DataArray(
+                pool_dict[lvl],
+                dims=['time', 'y', 'x'],
+                coords={
+                    'time': ds_out.time,
+                    'y': ds_out.y,
+                    'x': ds_out.x,
+                    'zw': lvl
+                }
+            )
+            ds_out[var].loc[dict(time=ds_out.time, y=ds_out.y, x=ds_out.x, zw=lvl)] = data
         else:
-            ds_out[var].loc[dict(z=lvl)] = pool_dict[lvl] 
+            # Create new DataArray with PALM dimensions
+            # Handle staggered grid for U component
+            if var == "U":
+                data = xr.DataArray(
+                    pool_dict[lvl],
+                    dims=['time', 'y', 'xu'],
+                    coords={
+                        'time': ds_out.time,
+                        'y': ds_out.y,
+                        'xu': ds_out.xu,
+                        'z': lvl
+                    }
+                )
+                ds_out[var].loc[dict(time=ds_out.time, y=ds_out.y, xu=ds_out.xu, z=lvl)] = data
+            elif var == "V":
+                # Handle staggered grid for V component
+                data = xr.DataArray(
+                    pool_dict[lvl],
+                    dims=['time', 'yv', 'x'],
+                    coords={
+                        'time': ds_out.time,
+                        'yv': ds_out.yv,
+                        'x': ds_out.x,
+                        'z': lvl
+                    }
+                )
+                ds_out[var].loc[dict(time=ds_out.time, yv=ds_out.yv, x=ds_out.x, z=lvl)] = data
+            else:
+                # Regular grid for other variables
+                data = xr.DataArray(
+                    pool_dict[lvl],
+                    dims=['time', 'y', 'x'],
+                    coords={
+                        'time': ds_out.time,
+                        'y': ds_out.y,
+                        'x': ds_out.x,
+                        'z': lvl
+                    }
+                )
+                ds_out[var].loc[dict(time=ds_out.time, y=ds_out.y, x=ds_out.x, z=lvl)] = data
     return ds_out[var]
-
 

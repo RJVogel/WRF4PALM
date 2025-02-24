@@ -5,6 +5,8 @@
 
 **Want to create your own static driver? Check out [GEO4PALM](https://github.com/dongqi-DQ/GEO4PALM)!**
 
+**Attention:** No questions/issues will be answered via email from Feb 2025. All users should use the issue/discussions feature via GitHub. Please go through the previous issues to check your question was not already answered before open a new issue.
+
 ## Contents
 1. [What's new?](https://github.com/dongqi-DQ/WRF4PALM/tree/v1.1/#whats-new-in-v11)
 2. [Instructions](https://github.com/dongqi-DQ/WRF4PALM/tree/v1.1/#instrustions)
